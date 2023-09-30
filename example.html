@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const arr2 = ["rohan", "nilo", "vivekdhaduk"];
+
+      arr2.sort((a, b) => {
+        a.length - b.length;
+      });
+
+      // filter data if id's are same
+      const arr = [
+        { id: 1, name: "test1", count: 8 },
+        { id: 2, name: "test2", count: 15 },
+        { id: 2, name: "test2", count: 5 },
+        { id: 3, name: "test3", count: 10 },
+        { id: 3, name: "test3", count: 19 },
+      ];
+
+      const transformedArr = [];
+      const idMap = {};
+
+      arr.forEach((item) => {
+        const existingItem = idMap[item.id];
+        if (existingItem) {
+          existingItem.count += item.count;
+        } else {
+          idMap[item.id] = { ...item };
+          transformedArr.push(idMap[item.id]);
+        }
+      });
+
+      console.log(transformedArr);
+
+      // transform string after targeting value
+      function transformString(str, target, letters) {
+        target = target % 26;
+        const charMap = {};
+        const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+        for (let i = 0; i < 26; i++) {
+          charMap[alphabet[i]] = letters[(i + target) % 26];
+        }
+
+        let result = "";
+        for (let i = 0; i < str.length; i++) {
+          const char = str[i];
+          if (char in charMap) {
+            result += charMap[char];
+          } else {
+            result += char; // Keep non-alphabet characters unchanged
+          }
+        }
+
+        return result;
+      }
+      const str = "neel";
+      const target = 2;
+      const latters = [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+      ];
+
+      const result = transformString(str, target, latters);
+      console.log(result); // Output: "fkzkv"
+
+      // flate array
+
+      let flattenedArr = [];
+
+      function flattenArray(arr) {
+        arr.forEach((element) => {
+          if (Array.isArray(element)) {
+            flattenArray(element);
+          } else {
+            flattenedArr.push(element);
+          }
+        });
+        return flattenedArr;
+      }
+
+      const nestedArray = [1, 2, [3, 4, [5]]];
+
+      console.log(flattenArray(nestedArray), "flattend arrya");
+
+      // find the longest seqence in array
+
+      function findLongestSequence(arr) {
+        let currentSequence = [];
+        let longestSequence = [];
+
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i] === arr[i - 1] + 1) {
+            currentSequence.push(arr[i]);
+          } else {
+            currentSequence = [arr[i]];
+          }
+
+          if (currentSequence.length > longestSequence.length) {
+            longestSequence = currentSequence;
+          }
+        }
+
+        return longestSequence;
+      }
+
+      const seqarr = [
+        1, 2, 3, 4, 5, 4, 1, 2, 2, 1, 2, 3, 4, 5, 6, 7, 8, 10, 2, 3, 4, 5,
+      ];
+      const longestSequence = findLongestSequence(seqarr);
+      console.log(longestSequence);
+
+      // flate object
+
+      // Declare an object
+      let ob = {
+        Company: "GeeksforGeeks",
+        Address: "Noida",
+        contact: +91 - 999999999,
+        mentor: {
+          HTML: "GFG",
+          CSS: "GFG",
+          JavaScript: "GFG",
+        },
+      };
+
+      const flattenObj = (ob) => {
+        let result = {};
+
+        for (const i in ob) {
+          if (typeof ob[i] === "object" && !Array.isArray(ob[i])) {
+            const temp = flattenObj(ob[i]);
+            for (const j in temp) {
+              result[i + "." + j] = temp[j];
+            }
+          } else {
+            result[i] = ob[i];
+          }
+        }
+        return result;
+      };
+
+      console.log(flattenObj(ob), "flatend obj");
+
+      // array shorting
+
+      function reverseArray(arr) {
+        var reversedArr = [];
+        for (var i = arr.length - 1; i >= 0; i--) {
+          reversedArr.push(arr[i]);
+        }
+        return reversedArr;
+      }
+
+      // Example usage:
+      var myArray = [1, 2, 3, 4, 5];
+      var reversedArray = reverseArray(myArray);
+      console.log(reversedArray, "reversedArray"); // Output: [5, 4, 3, 2, 1]
+
+      // sorting array
+
+      function sortArray(arr) {
+        for (var i = 0; i < arr.length - 1; i++) {
+          for (var j = 0; j < arr.length - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+              var temp = arr[j];
+              arr[j] = arr[j + 1];
+              arr[j + 1] = temp;
+            }
+          }
+        }
+        return arr;
+      }
+
+      // Example usage:
+      var myArray = [5, 2, 8, 1, 4];
+      var sortedArray = sortArray(myArray);
+      console.log(sortedArray,"sortedArray"); // Output: [1, 2, 4, 5, 8]
+    </script>
+  </body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <div class="container mt-5">
+      <h2 class="mb-4">User Registration Form</h2>
+      <form id="userForm" class="mb-4">
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" class="form-control" />
+        </div>
+
+        <div class="form-group my-2">
+          <label>Hobbies:</label><br />
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="hobby1"
+              name="hobbies[]"
+              value="Reading"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="hobby1">Reading</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="hobby2"
+              name="hobbies[]"
+              value="Gaming"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="hobby2">Gaming</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="hobby3"
+              name="hobbies[]"
+              value="Traveling"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="hobby3">Traveling</label>
+          </div>
+        </div>
+
+        <div class="form-group my-2">
+          <label>Gender:</label><br />
+          <div class="form-check form-check-inline">
+            <input
+              type="radio"
+              id="Male"
+              name="gender"
+              value="Male"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="male">Male</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              type="radio"
+              id="Female"
+              name="gender"
+              value="Female"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="female">Female</label>
+          </div>
+        </div>
+
+        <div class="form_data my-3">
+          <select
+            id="country"
+            onfocus="updateCountry()"
+            onchange="updateStates()"
+          >
+            <option value="">---Select Country---</option>
+          </select>
+
+          <select id="state" onchange="updateCities()" disabled>
+            <option value="">---Select State---</option>
+          </select>
+
+          <select id="city" disabled>
+            <option value="">---Select City---</option>
+          </select>
+        </div>
+
+        <div class="form_data my-3">
+          <textarea rows="5" cols="174" id="textarea"></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="submit" onclick="addUser(event)">
+          Submit
+        </button>
+        <button
+          class="btn btn-primary"
+          id="SelectAll"
+          onclick="SelectAll(event)"
+        >
+          SelectAll
+        </button>
+        <button class="btn btn-primary" id="Delete" onclick="Delete(event)">
+          DeleteSelected
+        </button>
+        <!-- <button class="btn btn-primary" id="DeleteAll" onclick="DeleteAll(event)">DeleteAll</button> -->
+      </form>
+
+      <hr />
+
+      <h2>User Data Table</h2>
+      <table id="userTable" class="table table-bordered">
+        <thead>
+          <tr>
+            <th></th>
+            <th>id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Hobbies</th>
+            <th>Gender</th>
+            <th>Country</th>
+            <th>State</th>
+            <th>City</th>
+            <th>Textarea</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      var usersData = [];
+
+      const countriesData = {
+        countries: [
+          {
+            name: "India",
+            states: [
+              {
+                name: "Gujarat",
+                cities: ["Surat", "Vapi", "Valsad"],
+              },
+              {
+                name: "Maharashtra",
+                cities: ["Mumbai", "Pune"],
+              },
+            ],
+          },
+          {
+            name: "United States",
+            states: [
+              {
+                name: "California",
+                cities: ["Los Angeles", "San Francisco", "San Diego"],
+              },
+              {
+                name: "New York",
+                cities: ["New York City", "Buffalo", "Albany"],
+              },
+            ],
+          },
+          {
+            name: "United Kingdom",
+            states: [
+              {
+                name: "England",
+                cities: ["London", "Manchester", "Birmingham"],
+              },
+              {
+                name: "Scotland",
+                cities: ["Edinburgh", "Glasgow", "Aberdeen"],
+              },
+            ],
+          },
+        ],
+      };
+      const countryDropdown = document.getElementById("country");
+      const stateDropdown = document.getElementById("state");
+      const cityDropdown = document.getElementById("city");
+
+      function updateCountry() {
+        countryDropdown.innerHTML =
+          '<option value="">---Select Country---</option>';
+
+        countriesData.countries.map((countryname) => {
+          const option = document.createElement("option");
+          option.value = countryname.name;
+          option.textContent = countryname.name;
+          countryDropdown.append(option);
+        });
+      }
+
+      function updateStates() {
+        const selectedCountry = countryDropdown.value;
+        cityDropdown.disabled = selectedCountry === "";
+        stateDropdown.disabled = selectedCountry === "";
+
+        stateDropdown.innerHTML =
+          '<option value="">---Select State---</option>';
+        cityDropdown.innerHTML = '<option value="">---Select City---</option>';
+
+        if (selectedCountry === "") return;
+        const countryData = countriesData.countries.find(
+          (country) => country.name === selectedCountry
+        );
+
+        if (!countryData) return;
+        countryData.states.map((state) => {
+          const option = document.createElement("option");
+          option.value = state.name;
+          option.textContent = state.name;
+          stateDropdown.append(option);
+        });
+      }
+
+      function updateCities() {
+        const selectedState = stateDropdown.value;
+        cityDropdown.disabled = selectedState === "";
+        cityDropdown.innerHTML = '<option value="">---Select City---</option>';
+
+        if (selectedState === "") return;
+
+        const selectedCountry = countryDropdown.value;
+
+        const countryData = countriesData.countries.find(
+          (country) => country.name === selectedCountry
+        );
+
+        if (!countryData) return;
+
+        const selectedStateData = countryData.states.find(
+          (state) => state.name === selectedState
+        );
+
+        if (!selectedStateData) return;
+
+        selectedStateData.cities.map((city) => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          cityDropdown.append(option);
+        });
+      }
+
+      function addUser(event) {
+        event.preventDefault();
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        var hobbies = [];
+        document.getElementById("hobby1").checked
+          ? hobbies.push("Reading")
+          : "";
+        document.getElementById("hobby2").checked ? hobbies.push("Gaming") : "";
+        document.getElementById("hobby3").checked
+          ? hobbies.push("Traveling")
+          : "";
+        var maleRadio = document.getElementById("Male");
+        var femaleRadio = document.getElementById("Female");
+        var gender = document.getElementById("Male").checked
+          ? "Male"
+          : "Female";
+        var country = document.getElementById("country").value;
+        var state = document.getElementById("state").value;
+        var city = document.getElementById("city").value;
+        var textarea = document.getElementById("textarea").value;
+
+        if (!name || !email || hobbies.length === 0 || !textarea) {
+          alert("Please fill in all fields");
+          return false;
+        }
+        if (!maleRadio.checked && !femaleRadio.checked) {
+          alert("Please select a gender.");
+          return false;
+        }
+        if (country == "" || state == "" || city == "") {
+          alert("select country,state and city");
+          return false;
+        }
+
+        let id = Math.max(...usersData.map((user) => user.id), 0) + 1;
+
+        const user = {
+          id: id,
+          name: name,
+          email: email,
+          hobbies: hobbies,
+          gender: gender,
+          country: country,
+          state: state,
+          city: city,
+          textarea: textarea,
+        };
+
+        usersData.push(user);
+        document.getElementById("userForm").reset();
+        updateTable();
+
+        var country = (countryDropdown.innerHTML =
+          '<option value="">---Select Country---</option>');
+        var state = (stateDropdown.innerHTML =
+          '<option value="">---Select State---</option>');
+        var city = (cityDropdown.innerHTML =
+          '<option value="">---Select City---</option>');
+        var btn = document.getElementById("submit");
+        btn.textContent = "Submit";
+      }
+
+      function updateTable() {
+        const tableBody = document
+          .getElementById("userTable")
+          .getElementsByTagName("tbody")[0];
+        tableBody.innerHTML = "";
+        usersData.map((user, index) => {
+          const row = tableBody.insertRow();
+          const checkbox = row.insertCell();
+          const idCell = row.insertCell();
+          const nameCell = row.insertCell();
+          const emailCell = row.insertCell();
+          const hobbiesCell = row.insertCell();
+          const genderCell = row.insertCell();
+          const countryCell = row.insertCell();
+          const stateCell = row.insertCell();
+          const cityCell = row.insertCell();
+          const textareaCell = row.insertCell();
+          const actionCell = row.insertCell();
+
+          idCell.innerHTML = user.id;
+          nameCell.innerHTML = user.name;
+          emailCell.innerHTML = user.email;
+          hobbiesCell.innerHTML = user.hobbies.join(", ");
+          genderCell.innerHTML = user.gender;
+          countryCell.innerHTML = user.country;
+          stateCell.innerHTML = user.state;
+          cityCell.innerHTML = user.city;
+          textareaCell.innerHTML = user.textarea;
+
+          const deleteButton = document.createElement("button");
+          deleteButton.innerText = "Delete";
+          deleteButton.onclick = () => deleteUser(index);
+          actionCell.appendChild(deleteButton);
+
+          const EditButton = document.createElement("button");
+          EditButton.innerText = "Edit";
+          EditButton.onclick = () => updateUser(user.id);
+          actionCell.appendChild(EditButton);
+
+          var chck = document.createElement("INPUT");
+          chck.setAttribute("type", "checkbox");
+          checkbox.appendChild(chck);
+        });
+      }
+
+      function deleteUser(index) {
+        usersData.splice(index, 1);
+        updateTable();
+      }
+
+      var SelectAll = document.getElementById("SelectAll");
+      SelectAll.onclick = function (event) {
+        event.preventDefault();
+        SelectAllData();
+      };
+
+      function SelectAllData() {
+        var checkboxes = document.querySelectorAll(
+          "#userTable tbody input[type='checkbox']"
+        );
+        checkboxes.forEach((checkbox) => {
+          var checkboxtick = (checkbox.checked = true);
+        });
+      }
+
+      var deleteButton = document.getElementById("Delete");
+      deleteButton.onclick = function (event) {
+        event.preventDefault();
+        deleteSelectedUsers();
+      };
+
+      function deleteSelectedUsers() {
+        var checkboxes = document.querySelectorAll(
+          "#userTable tbody input[type='checkbox']"
+        );
+        var selectedIds = [];
+        checkboxes.forEach((checkbox, index) => {
+          if (checkbox.checked) {
+            selectedIds.push(index);
+          }
+        });
+        if (selectedIds.length === 0) {
+          alert("Please select at least one record to delete.");
+          return;
+        }
+
+        // Sort the selectedIds array in descending order
+        selectedIds.sort((a, b) => b - a);
+
+        // Splice the usersData array based on the selectedIds
+        selectedIds.forEach((index) => {
+          usersData.splice(index, 1);
+        });
+        updateTable();
+      }
+
+      // var DeleteAllButton = document.getElementById("DeleteAll");
+      // DeleteAllButton.onclick = function (event) {
+      //     event.preventDefault();
+      //     DeleteAll(usersData);
+      // }
+      // function DeleteAll(usersData) {
+      //     usersData.splice(0)
+      //     updateTable();
+      // }
+
+      function updateUser(userId) {
+        const userToUpdate = usersData.find((user) => user.id === userId);
+
+        if (userToUpdate) {
+          document.getElementById("name").value = userToUpdate.name;
+          document.getElementById("email").value = userToUpdate.email;
+
+          document.getElementById("hobby1").checked =
+            userToUpdate.hobbies.includes("Reading");
+          document.getElementById("hobby2").checked =
+            userToUpdate.hobbies.includes("Gaming");
+          document.getElementById("hobby3").checked =
+            userToUpdate.hobbies.includes("Traveling");
+
+          if (userToUpdate.gender === "Male") {
+            document.getElementById("Male").checked = true;
+          } else if (userToUpdate.gender === "Female") {
+            document.getElementById("Female").checked = true;
+          }
+
+          updateCountry();
+
+          // Set the selected value for the country dropdown
+          document.getElementById("country").value = userToUpdate.country;
+          updateStates();
+
+          // Set the selected value for the state dropdown
+          document.getElementById("state").value = userToUpdate.state;
+          updateCities();
+
+          // Set the selected value for the city dropdown
+          document.getElementById("city").value = userToUpdate.city;
+
+          document.getElementById("textarea").value = userToUpdate.textarea;
+
+          var btn = document.getElementById("submit");
+          btn.textContent = "Update";
+
+          btn.onclick = function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            var hobbies = [];
+            document.getElementById("hobby1").checked
+              ? hobbies.push("Reading")
+              : "";
+            document.getElementById("hobby2").checked
+              ? hobbies.push("Gaming")
+              : "";
+            document.getElementById("hobby3").checked
+              ? hobbies.push("Traveling")
+              : "";
+            var maleRadio = document.getElementById("Male");
+            var femaleRadio = document.getElementById("Female");
+            var gender = document.getElementById("Male").checked
+              ? "Male"
+              : "Female";
+            var country = document.getElementById("country").value;
+            var state = document.getElementById("state").value;
+            var city = document.getElementById("city").value;
+            var textarea = document.getElementById("textarea").value;
+
+            if (!name || !email || hobbies.length === 0 || !textarea) {
+              alert("Please fill in all fields");
+              return false;
+            }
+            if (!maleRadio.checked && !femaleRadio.checked) {
+              alert("Please select a gender.");
+              return false;
+            }
+            if (country == "" || state == "" || city == "") {
+              alert("select country, state, and city");
+              return false;
+            }
+            const updatedUser = {
+              id: userToUpdate.id,
+              name: name,
+              email: email,
+              hobbies: hobbies,
+              gender: gender,
+              country: country,
+              state: state,
+              city: city,
+              textarea: textarea,
+            };
+
+            const indexToUpdate = usersData.findIndex(
+              (user) => user.id === userToUpdate.id
+            );
+            usersData[indexToUpdate] = updatedUser;
+
+            document.getElementById("userForm").reset();
+            btn.textContent = "Submit";
+            btn.onclick = addUser;
+            updateTable();
+          };
+        }
+      }
+    </script>
+  </body>
+</html>
